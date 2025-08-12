@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cricket Individual Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --card:#00bfff;
+      --accent:#00bfff;
+      --muted:#94a3b8;
+      --glass: #00bfff;
+      --radius:14px;
+      color-scheme: dark;
+      text-align: center;
+    }
+    * {box-sizing:border-box;margin:0;padding:0}
+    body {
+      font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:#d9dcdd;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      font-family: 'orbitron', monospace;
+      font-weight: bold;
+      position:relative;
+      z-index:1;
+    }
+    .back-vid {
+      position:fixed;
+      top:0;left:0;width:100%;height:100%;
+      object-fit:cover;
+      z-index:-1;
+    }
+    .container {
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      grid-template-columns: 440px 1fr;
+      gap:28px;
+    }
+    .card-left, .card-right {
+      background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+      border-radius:var(--radius);
+      padding:22px;
+      border: 1px solid #00bfff8f;
+      backdrop-filter: blur(3px);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 0 15px rgba(3, 183, 248, 0.922);
+    }
+    .hero {
+      border-radius:12px;
+      overflow:hidden;
+      position:relative;
+      min-height:220px;
+    }
+    .hero img {width:100%;height:100%;object-fit:cover;display:block}
+    .hero .overlay {
+      position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(180deg,transparent, rgba(0,0,0,0.6));
+      color:#00bfff;font-weight:700;font-size:18px
+    }
+    .info {display:flex;gap:12px;align-items:center}
+    .meta {color:var(--muted);font-size:13px}
+    h2 {margin:4px 0 12px 0;font-size:20px}
+    form {display:grid;gap:12px}
+    .row {display:flex;gap:12px}
+    .col {flex:1}
+    label {font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type="text"],input[type="email"],input[type="tel"],select,textarea {
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid#00bfff8f;background:transparent;color:inherit;font-size:14px
+    }
+    textarea {min-height:100px;resize:vertical}
+    .small {font-size:13px;color:var(--muted);text-align:left;width:100%}
+    .file-input {display:flex;gap:13px;align-items:center;justify-content:center;margin-left:-10px;}
+    .logo-preview {width:64px;height:64px;border-radius:8px;display:inline-block;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);object-fit:cover}
+    .actions {display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:10px}
+    .btn {background:linear-gradient(90deg,var(--accent),#00bfff);padding:5px 5px;border-radius:10px;border:none;color:#e0e1e5;font-weight:700;cursor:pointer}
+    .btn.ghost {background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--muted)}
+    .note {font-size:13px;color:var(--muted);margin-top:6px}
+    @media (max-width:980px) {
+      .container {grid-template-columns:1fr;padding:0}
+      body {padding:18px}
+    }
+    
+/* Existing styles here ... */
+
+/* Mobile responsiveness for 480px and below */
+@media (max-width: 480px) {
+  .container {
+    grid-template-columns: 1fr; /* stack cards vertically */
+    gap: 20px;
+    padding: 10px;
+  }
+
+  body {
+    padding: 10px;
+  }
+
+  .card-left, 
+  .card-right {
+    padding: 16px;
+  }
+
+  /* Make the button full width for easier tapping */
+  .card-right .card {
+    width: 100%;
+    margin-left: 0;
+    position: static;
+    top: 0;
+  }
+
+  /* Adjust form inputs for smaller screen */
+  .row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .file-input {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logo-preview {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Reduce font sizes for headings */
+  h2 {
+    font-size: 18px;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    
+  }
+  .card{
+    padding: 10px;
+    font-size: 14px;
+
+
+     margin: 0px; /* center button horizontally */
+    display: block;
+    margin-left: -100px ;
+
+
+  }
+}
+</style>
+
+  
+  </style>
+</head>
+<body>
+
+  <video class="back-vid" autoplay loop muted playsinline src="videos/galaxy.mp4"></video>
+  
+  <div class="container">
+    
+    
+    <aside class="card-left">
+      <div class="hero">
+        <img src="assets/cricket.jpg" alt="Cricket action">
+        <div class="overlay">SRKR CRICKET TOURNAMENT</div>
+      </div>
+      <div class="info">
+        <div>
+          <br>
+          <div class="meta">Starts: -----, 2025 • Format: ----block • Platform: offline</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <p class="small">Register individually for the upcoming offline cricket tournament. Fill the form and upload your photo.</p>
+      </div>
+      <div style="margin-top:auto;display:flex;gap:10px;align-items:center;text-align: left;">
+        <div style="flex:1">
+          <div class="small">Organizer</div>
+          <div style="font-weight:700">SRKR ENGINEERING COLLEGE</div>
+        </div>
+        <div style="text-align:right;color:var(--muted)">
+          <div class="small">Contact</div>
+          <div>#91SRKR</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="card-right">
+      <h2 style="text-align: left;">Individual Registration</h2>
+     <button class="card" 
+  style="padding: 8px; background-color: #00bfff; width: 25%; margin-left: 410px; border: 1px solid #00bfff; border-radius: 10px; align-items: baseline; position: relative; top: -35px;" 
+  onclick="window.location.href='cricket.html'">
+  Team Registration
+</button>
+
+      <br>
+      <form>
+        <div class="row">
+          <div class="col">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter your full name" required>
+          </div>
+          <div class="col">
+            <label>Email</label>
+            <input type="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>Contact Number</label>
+            <input type="tel" placeholder="+91 9XXXXXXXXX" required>
+          </div>
+          <div class="col">
+            <label>City</label>
+            <input type="text" placeholder="City">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>State</label>
+            <input type="text" placeholder="State">
+          </div>
+          <div class="col">
+            <label>Category</label>
+            <select>
+              <option value="t20">T20</option>
+              <option value="t10">T10</option>
+              <option value="t5">T5 / 5-over</option>
+              <option value="test">Test Match</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>Age Group</label>
+            <select>
+              <option value="18-19">18-19</option>
+              <option value="19-21">19-21</option>
+              <option value="21-23">21-23</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Gender</label>
+            <select>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Total Runs</label>
+            <input type="text" placeholder="Total Runs">
+          </div> 
+          <div class="col">
+            <label>Wickets</label>
+            <input type="text" placeholder="Wickets">
+          </div>
+          <div class="col">
+            <label>catches</label>
+            <input type="text" placeholder="catches">
+          </div>
+        </div>
+        <br>
+        <div>
+          <label>Upload Photo</label>
+          <div class="file-input">
+            <input type="file" accept="image/*">
+            <img class="logo-preview" src="https://via.placeholder.com/64x64.png?text=Photo" alt="photo preview">
+          </div>
+        </div>
+        <div>
+          <label>Role</label>
+          <input type="text" placeholder="Batsman / Bowler / All-rounder / Wicket-Keeper">
+        </div>
+        <div>
+          <label>Additional Notes (optional)</label>
+          <textarea placeholder=""></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <input type="checkbox" required>
+          <label class="small">I agree to the tournament rules and accept the <a href="#" style="color:var(--accent);text-decoration:none;">terms</a>.</label>
+        </div>
+        <div class="actions">
+          <button type="reset" class="btn ghost">Reset</button>
+          <button type="submit" class="btn">Submit Registration</button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cricket Tournament Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --card:#00bfff;
+      --accent:#00bfff;
+      --muted:#94a3b8;
+      --glass: #00bfff;
+      --radius:14px;
+      color-scheme: dark;
+      text-align: center;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:#d9dcdd;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      font-family: 'orbitron', monospace;
+      font-weight: bold;
+      position:relative;
+      z-index:1;
+    }
+    .back-vid{
+      position:fixed;
+      top:0;left:0;width:100%;height:100%;
+      object-fit:cover;
+      z-index:-1;
+    }
+    .container{
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      grid-template-columns: 440px 1fr;
+      gap:28px;
+    }
+    .card-left, .card-right{
+      background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      border: 1px solid #00bfff8f;
+      backdrop-filter: blur(3px);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+          box-shadow: 0 0 15px rgba(3, 183, 248, 0.922);
+     
+    }
+    .hero{
+      border-radius:12px;
+      overflow:hidden;
+      position:relative;
+      min-height:220px;
+    }
+    .hero img{width:100%;height:100%;object-fit:cover;display:block}
+    .hero .overlay{
+      position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(180deg,transparent, rgba(0,0,0,0.6));
+      color:#00bfff;font-weight:700;font-size:18px
+    }
+    .info{display:flex;gap:12px;align-items:center}
+    .badge{background:var(--glass);padding:6px 10px;border-radius:999px;font-weight:600;color:var(--accent);border:1px solid rgba(245,158,11,0.12)}
+    .meta{color:var(--muted);font-size:13px}
+    h2{margin:4px 0 12px 0;font-size:20px}
+    form{display:grid;gap:12px}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type="text"],input[type="email"],input[type="tel"],select,textarea{
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid#00bfff8f;background:transparent;color:inherit;font-size:14px
+    }
+    textarea{min-height:100px;resize:vertical}
+    .small{font-size:13px;color:var(--muted);text-align:left;width:100%}
+    .players{background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;border:1px dashed rgba(255,255,255,0.1)}
+    .player-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    .player-row input{flex:1}
+    .player-row button{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:6px}
+    .file-input{display:flex;gap:13px;align-items:center;justify-content:center;margin-left:-10px;}
+    .logo-preview{width:64px;height:64px;border-radius:8px;display:inline-block;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);object-fit:cover}
+    .actions{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:10px}
+    .btn{background:linear-gradient(90deg,var(--accent),#00bfff);padding:5px 5px;border-radius:10px;border:none;color:#e0e1e5;font-weight:700;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--muted)}
+    .note{font-size:13px;color:var(--muted);margin-top:6px}
+    @media (max-width:980px){
+      .container{grid-template-columns:1fr;padding:0}
+      body{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <!-- <div style="position: fixed; top: 15px; right: 20px; z-index: 10;">
+  <button class="card-right" onclick="window.location.href='cricketind.html'">
+    Individual Registration
+  </button>
+</div> -->
+
+  <video class="back-vid" autoplay loop muted playsinline src="videos/galaxy.mp4"></video>
+  <div class="container">
+    
+  
+    <aside class="card-left">
+      <div class="hero">
+      
+        <img src="assets/cricket.jpg" alt="Cricket action">
+        <div class="overlay">SRKR CRICKET TOURNMENT</div>
+      </div>
+
+      <div class="info">
+        <div>
+          <!-- <div class="badge"></div> --><br>
+          <div class="meta">Starts: -----, 2025 • Format: ----block  • Platform: offline</div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <p class="small">Register your team for the upcoming offline cricket tournament. Fill the form and upload your team logo. Squad size: 11-15 players. Keep player names and contact numbers ready.</p>
+      </div>
+
+      <div style="margin-top:auto;display:flex;gap:10px;align-items:center;text-align: left;">
+        <div style="flex:1">
+          <div class="small">Organizer</div>
+          <div style="font-weight:700">SRKR ENGINEERING COLLEGE</div>
+        </div>
+        <div style="text-align:right;color:var(--muted)">
+          <div class="small">Contact</div>
+          <div>#91SRKR</div>
+        </div>
+      </div>
+    </aside>
+
+    
+    <main class="card-right">
+      <h2 style="text-align: left;">Team Registration</h2>
+        <div style="position: fixed; top: 15px; right: 20px; z-index: 10;">
+  <button class="card-right" style="padding: 10px; background-color: #00bfff;" onclick="window.location.href='cricketind.html'">
+    Individual Registration
+  </button>
+</div>
+      <br>
+      <form id="regForm" onsubmit="return handleSubmit(event)">
+
+        <div class="row">
+          <div class="col">
+            <label>Team Name</label>
+            <input type="text" id="teamName" placeholder="Enter your Team Name" required>
+          </div>
+          <div class="col">
+            <label>Captain's Name ( Player 1 )</label>
+            <input type="text" id="captainName" placeholder="Captain full name" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="team@example.com" required>
+          </div>
+          <div class="col">
+            <label>Contact Number</label>
+            <input type="tel" id="phone" placeholder="+91 9XXXXXXXXX" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>City</label>
+            <input type="text" id="city" placeholder="City">
+          </div>
+          <div class="col">
+            <label>State</label>
+            <input type="text" id="state" placeholder="State">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Category</label>
+            <select id="category">
+              <option value="t20">T20</option>
+              <option value="t10">T10</option>
+              <option value="t5">T5 / 5-over</option>
+              <option value="test">Test Match</option>  
+
+            </select>
+          </div>
+          <div class="col">
+            <label>Age Group</label>
+            <select id="ageGroup">
+              <option value="open">18-19</option>
+              <option value="u16">19-21</option>
+              <option value="u18">21-23</option>
+             
+            </select>
+          </div>
+        </div><br>
+
+        <div>
+          <label>Team Logo</label>
+          <div class="file-input">
+            <input type="file" id="logo" accept="image/*">
+            <img id="logoPreview" class="logo-preview" src="https://via.placeholder.com/64x64.png?text=Logo" alt="logo preview">
+            <div class="small"><label> Gender </label>
+              <select id="Gender">
+                <option value="">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+          </div>
+          </div>
+        </div><br>
+       
+        <div>
+          <label>Players (Add player names and role)</label>
+          <div class="players" id="players">
+          
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="button" class="btn" onclick="addPlayer()">+ Add Player</button>
+            <button type="button" class="btn ghost" onclick="removePlayer()">Remove Last</button>
+          </div><br>
+          <div class="note">Minimum 11 players required. You can add up to 15.</div>
+        </div>
+
+        <div>
+          <label>Additional Notes (optional)</label>
+          <textarea id="notes" placeholder=""></textarea>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <input type="checkbox" id="agree" required>
+          <label for="agree" class="small " >I agree to the tournament rules and accept the <a href="#" style="color:var(--accent);text-decoration:none;">terms</a>.</label>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn ghost" onclick="resetForm()">Reset</button>
+          <button type="submit" class="btn">Submit Registration</button>
+        </div>
+
+      </form>
+
+      <div id="result" style="margin-top:12px;display:none;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);font-size:14px"></div>
+    </main>
+
+  </div>
+
+  <script>
+   
+    const playersEl = document.getElementById('players');
+    const logoInput = document.getElementById('logo');
+    const logoPreview = document.getElementById('logoPreview');
+    const result = document.getElementById('result');
+
+    let playerCount = 0;
+    function addPlayer(name = '', role = ''){
+      if(playerCount >= 15) return alert('Max 15 players allowed');
+      playerCount++;
+      const div = document.createElement('div');
+      div.className = 'player-row';
+      div.dataset.idx = playerCount;
+      div.innerHTML = `\
+        <input type="text" placeholder="Player ${playerCount} name" class="player-name" value="${escapeHtml(name)}" required>\
+        <input type="text" placeholder="Role (Batsman / Bowler / WK)" class="player-role" value="${escapeHtml(role)}">\
+        <button type="button" title="Remove" onclick="this.parentElement.remove();playerCount--">✕</button>`;
+      playersEl.appendChild(div);
+    }
+
+    function removePlayer(){
+      if(playerCount <= 0) return;
+      const last = playersEl.querySelector('.player-row:last-child');
+      if(last){ last.remove(); playerCount--; }
+    }
+
+  
+    for(let i=0;i<1;i++) addPlayer();
+
+    logoInput.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      if(f.size > 2*1024*1024){ alert('Logo too large. Max 2MB'); logoInput.value = ''; return }
+      const reader = new FileReader();
+      reader.onload = (ev)=>{ logoPreview.src = ev.target.result }
+      reader.readAsDataURL(f);
+    });
+
+    function handleSubmit(e){
+      e.preventDefault();
+      
+      const teamName = document.getElementById('teamName').value.trim();
+      const captain = document.getElementById('captainName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const state = document.getElementById('state').value.trim();
+      const category = document.getElementById('category').value;
+      const ageGroup = document.getElementById('ageGroup').value;
+      const notes = document.getElementById('notes').value.trim();
+
+      const playerRows = Array.from(playersEl.querySelectorAll('.player-row'));
+      const players = playerRows.map(r=>({name:r.querySelector('.player-name').value.trim(), role:r.querySelector('.player-role').value.trim()})).filter(p=>p.name);
+
+      if(players.length <6 ){ alert('Please add at least 1 players'); return }
+
+      const payload = {teamName,captain,email,phone,city,state,category,ageGroup,players,notes};
+
+      result.style.display = 'block';
+      result.innerHTML = `<strong>Registration Preview</strong><br>Team: ${escapeHtml(teamName)}<br>Captain: ${escapeHtml(captain)}<br>Players: ${players.length} <br>Email: ${escapeHtml(email)}<br>Category: ${escapeHtml(category.toUpperCase())}`;
+      window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+
+   
+    }
+
+    function resetForm(){
+      if(!confirm('Reset the form?')) return;
+      document.getElementById('regForm').reset();
+      logoPreview.src = 'https://via.placeholder.com/64x64.png?text=Logo';
+      playersEl.innerHTML = '';
+      playerCount = 0;
+      for(let i=0;i<1;i++) addPlayer();
+      result.style.display = 'none';
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+  </script>
+  </div>
+</body>
+</html>
