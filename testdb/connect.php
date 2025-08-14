@@ -2,8 +2,8 @@
 // Database connection settings
 $servername = "localhost";
 $username = "root";
-$password = "";
-$dbname = "hackthonsports";
+$password = ""; // Default XAMPP password is empty
+$dbname = "userdb";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

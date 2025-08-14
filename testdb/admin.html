@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tournament Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #00e0ff;
+        --secondary-color: #ffcc00;
+        --background-color: #0d1117;
+        --card-bg-color: rgba(20, 25, 34, 0.8);
+        --sidebar-bg: #161b22;
+        --text-color: #e6e6e6;
+        --border-color: #2e3a47;
+    }
+
+    body {
+        font-family: 'Roboto Mono', monospace;
+        margin: 0;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        overflow-x: hidden;
+        display: flex;
+        height: 100vh;
+        transition: padding-left 0.3s ease;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease-in-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        background-color: var(--sidebar-bg);
+        border-right: 2px solid var(--primary-color);
+        padding: 20px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transition: transform 0.3s ease, width 0.3s ease;
+        z-index: 10;
+        transform: translateX(0);
+    }
+
+    /* Collapsed sidebar state */
+    .sidebar.collapsed {
+        transform: translateX(-250px);
+    }
+    
+    .sidebar h2 {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--secondary-color);
+        padding-bottom: 10px;
+        text-align: center;
+        margin-bottom: 30px;
+        text-shadow: 0 0 5px var(--primary-color);
+        position: relative;
+    }
+    
+    /* Admin details toggle button (inside sidebar) */
+    .toggle-details-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 20px;
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        font-size: 0.7em;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .toggle-details-button.active {
+        transform: rotate(180deg);
+    }
+
+    /* Admin Details Section */
+    .admin-details {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    }
+    .admin-details.show {
+        max-height: 200px;
+        opacity: 1;
+    }
+    .admin-details p {
+        margin: 5px 0;
+        color: var(--text-color);
+        padding: 0 10px;
+    }
+    .admin-details h4 {
+        margin-top: 15px;
+        margin-bottom: 5px;
+        color: var(--secondary-color);
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        flex-grow: 1;
+    }
+    /* Subtle hover effect for menu items */
+    .sidebar-menu li a {
+        display: block;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 3px solid transparent;
+    }
+    .sidebar-menu li a:hover, .sidebar-menu li a.active {
+        background: rgba(0, 224, 255, 0.1);
+        color: var(--primary-color);
+        border-left: 3px solid var(--primary-color);
+        transform: translateX(5px);
+    }
+    
+    /* Main Content */
+    .main-content {
+        flex-grow: 1;
+        padding: 40px;
+        overflow-y: auto;
+        margin-left: 250px;
+        transition: margin-left 0.3s ease;
+    }
+
+    /* Main content when sidebar is collapsed */
+    .main-content.sidebar-collapsed {
+        margin-left: 0;
+    }
+    
+    /* Sidebar toggle button (outside sidebar) */
+    #sidebar-toggle-btn {
+        position: fixed;
+        left: 20px;
+        top: 20px;
+        z-index: 11;
+        background-color: var(--primary-color);
+        color: var(--background-color);
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 0.6em;
+        line-height: 1;
+        cursor: pointer;
+        transition: left 0.3s ease, transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #sidebar-toggle-btn.sidebar-collapsed {
+        left: 20px;
+        transform: rotate(180deg);
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    .dashboard-header h1 {
+        color: var(--primary-color);
+        text-shadow: 0 0 8px var(--primary-color);
+        font-size: 2.5em;
+    }
+
+    /* Cards */
+    .card {
+        background: var(--card-bg-color);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card h3 {
+        color: var(--secondary-color);
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        display: inline-block;
+        text-shadow: 0 0 0px var(--secondary-color);
+    }
+
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .overview-item {
+        background: rgba(0, 224, 255, 0.05);
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .overview-item:hover {
+        background: rgba(0, 224, 255, 0.1);
+        transform: scale(1.05);
+    }
+    .overview-item h4 {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.2em;
+    }
+    .overview-item p {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin: 10px 0 0 0;
+    }
+
+
+    /* Forms and Inputs */
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--primary-color);
+    }
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text-color);
+        border-radius: 5px;
+        font-family: 'Roboto Mono', monospace;
+        transition: all 0.3s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 5px var(--primary-color);
+    }
+    
+    /* Action buttons */
+    .action-button {
+        background-color: var(--secondary-color);
+        color: var(--background-color);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.8em;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .action-button:hover {
+        background-color: #e6b800;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    th {
+        background: rgba(0, 224, 255, 0.1);
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+    /* Subtle hover effect for table rows */
+    tr {
+        transition: background 0.2s ease;
+    }
+    tr:hover {
+        background: rgba(0, 224, 255, 0.05);
+    }
+    /* Buttons in table cells */
+    td .action-button {
+        margin-right: 5px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.7em;
+    }
+    .action-button.accept { background-color: #4CAF50; color: white; }
+    .action-button.deny { background-color: #f44336; color: white; }
+    .action-button.remove { background-color: #ff5722; color: white; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+            width: 100%;
+        }
+        .main-content {
+            margin-left: 0;
+            padding: 20px;
+        }
+        .main-content.sidebar-collapsed {
+            margin-left: 0;
+        }
+        .sidebar.collapsed {
+            transform: translateX(0);
+        }
+        #sidebar-toggle-btn {
+            left: 10px;
+        }
+        .overview-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    #message-box, #contact-modal {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--card-bg-color);
+        color: var(--text-color);
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    #message-box.show, #contact-modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    #contact-modal {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        bottom: auto;
+        right: auto;
+    }
+    #contact-modal .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 1.2em;
+        color: var(--text-color);
+        cursor: pointer;
+    }
+    
+    /* Autocomplete styles */
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid var(--border-color);
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: var(--card-bg-color);
+    }
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: var(--card-bg-color);
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.2s ease;
+    }
+    .autocomplete-items div:hover {
+        background-color: rgba(0, 224, 255, 0.1);
+        color: var(--primary-color);
+    }
+
+    /* Collapsible Sections for Player Management */
+    details {
+        margin-top: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: rgba(20, 25, 34, 0.5);
+        transition: all 0.3s ease;
+    }
+    details summary {
+        padding: 15px;
+        cursor: pointer;
+        outline: none;
+        color: var(--primary-color);
+        font-weight: 700;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    details summary::-webkit-details-marker {
+        display: none;
+    }
+    details summary::before {
+        content: '+';
+        font-family: 'Roboto Mono', monospace;
+        position: absolute;
+        right: 15px;
+        font-size: 1.5em;
+        transform-origin: center;
+        transition: transform 0.3s ease;
+    }
+    details[open] summary::before {
+        content: '-';
+    }
+    .nested-details {
+        margin-left: 20px;
+    }
+    .player-list-table {
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* Conflict message style */
+    #conflictMessage {
+        color: #ff5722;
+        background-color: rgba(255, 87, 34, 0.2);
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle-btn" onclick="toggleSidebar()">
+        &lt;
+    </button>
+
+    <div class="sidebar">
+        <h2>
+            Admin Panel
+            <button class="toggle-details-button" onclick="toggleAdminDetails()">▼</button>
+        </h2>
+        <div id="admin-details" class="admin-details">
+            <h4>Admin Info</h4>
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Role:</strong> Tournament Organizer</p>
+            <p><strong>Contact:</strong> admin@tournament.com</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active" onclick="showSection('dashboard', this)">📊 Dashboard</a></li>
+            <li><a href="#" onclick="showSection('players', this)">👥 Player Management</a></li>
+            <li><a href="#" onclick="showSection('scheduling', this)">📅 Match Scheduling</a></li>
+            <li><a href="#" onclick="showSection('announcements', this)">📢 Announcements</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div id="dashboard-section" class="content-section fade-in">
+            <div class="dashboard-header">
+                <h1>Admin Dashboard</h1>
+            </div>
+            
+            <div class="card">
+                <h3>System Overview</h3>
+                <div class="overview-grid">
+                    <div class="overview-item">
+                        <h4>Total Players</h4>
+                        <p id="totalPlayersCount">0</p>
+                    </div>
+                    <div class="overview-item">
+                        <h4>Players in Teams</h4>
+                        <p id="playersInTeamsCount">0</p>
+                    </div>
+                    <div class="overview-item">
+                        <h4>Individual Players</h4>
+                        <p id="individualPlayersCount">0</p>
+                    </div>
+                    <div class="overview-item">
+                        <h4>Total Teams</h4>
+                        <p id="totalTeamsCount">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Latest Activity</h3>
+                <p><strong>Mike Smith</strong> sent a new request.</p>
+                <p>A new match has been scheduled for Football.</p>
+            </div>
+        </div>
+
+        <div id="players-section" class="content-section fade-in" style="display: none;">
+            <div class="dashboard-header">
+                <h1>Player Management</h1>
+            </div>
+            
+            <div class="card">
+                <h3>New Player Requests</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Sport</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playerRequestsTable">
+                        <tr>
+                            <td>Chris Brown</td>
+                            <td>Cricket</td>
+                            <td>
+                                <button class="action-button accept" onclick="acceptPlayer(this, 'Chris Brown')">Accept</button>
+                                <button class="action-button deny" onclick="denyPlayer(this, 'Chris Brown')">Deny</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Team Formation Tool</h3>
+                <p>Identify individual players and assign them to teams with open spots based on sport and category.</p>
+                <div style="display: flex; gap: 20px; margin-top: 20px;">
+                    <div style="flex: 1;">
+                        <h4 style="color: var(--secondary-color);">Filters</h4>
+                        <div class="form-group">
+                            <label for="filterSport">Sport</label>
+                            <select id="filterSport" onchange="populateTeamFormationTool()">
+                                <option value="all">All Sports</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterCategory">Category</label>
+                            <select id="filterCategory" onchange="populateTeamFormationTool()">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="color: var(--secondary-color);">Individual Players</h4>
+                        <select id="individualPlayersSelect" size="5" style="width: 100%; min-height: 150px; background: rgba(0,0,0,0.3); color: var(--text-color); border: 1px solid var(--border-color);"></select>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="color: var(--secondary-color);">Teams with Open Slots</h4>
+                        <select id="openTeamsSelect" size="5" style="width: 100%; min-height: 150px; background: rgba(0,0,0,0.3); color: var(--text-color); border: 1px solid var(--border-color);"></select>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="action-button" onclick="matchPlayerToTeam()">Assign Manually</button>
+                    <button class="action-button" onclick="autoAssignPlayer()">Auto-Assign Player</button>
+                    <button class="action-button" id="formNewTeamBtn" onclick="formNewTeam()" disabled>Form New Team</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Registered Players</h3>
+                <div id="allPlayersList">
+                    <!-- Player data will be populated here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="scheduling-section" class="content-section fade-in" style="display: none;">
+            <div class="dashboard-header">
+                <h1>Match Scheduling</h1>
+            </div>
+            
+            <div class="card">
+                <h3>Upcoming Matches</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Match ID</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Sport</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="upcomingMatchesTable">
+                        <!-- Match data will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Schedule New Match</h3>
+                <form onsubmit="scheduleMatch(event)">
+                    <div class="form-group">
+                        <label for="matchSport">Sport</label>
+                        <select id="matchSport" required onchange="checkConflict()">
+                            <option value="" disabled selected>Select a sport</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="matchDate">Date</label>
+                        <input type="date" id="matchDate" required onchange="checkConflict()">
+                    </div>
+                    <div class="form-group">
+                        <label for="matchTime">Time</label>
+                        <input type="time" id="matchTime" required onchange="checkConflict()">
+                    </div>
+                    <p id="conflictMessage" style="display: none;">A match is already scheduled for this time. Please select another slot.</p>
+                    <button type="submit" class="action-button">Schedule Match</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="announcements-section" class="content-section fade-in" style="display: none;">
+            <div class="dashboard-header">
+                <h1>Announcements</h1>
+            </div>
+            
+            <div class="card">
+                <h3>Post New Announcement</h3>
+                <form onsubmit="makeAnnouncement(event)">
+                    <div class="form-group">
+                        <label for="announcementTarget">Target Audience</label>
+                        <select id="announcementTarget" onchange="toggleTargetInput()">
+                            <option value="all">All</option>
+                            <option value="players">Players</option>
+                            <option value="teams">Teams</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="target-input-container" style="display: none;">
+                        <label for="targetList">Enter player/team names (comma-separated)</label>
+                        <textarea id="targetList" rows="3" placeholder="e.g. John Doe, Mike Smith"></textarea>
+                        <div id="autocomplete-list" class="autocomplete-items"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="announcementText">Announcement</label>
+                        <textarea id="announcementText" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="action-button">Post Announcement</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Previous Announcements</h3>
+                <p>Match schedules will be released soon. Stay tuned!</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message-box"></div>
+    <div id="contact-modal">
+        <button class="close-button" onclick="closeContactModal()">×</button>
+        <h3>Contact Information</h3>
+        <p><strong>Name:</strong> <span id="contact-name"></span></p>
+        <p><strong>Email:</strong> <span id="contact-email"></span></p>
+    </div>
+
+<script>
+    // Sample data for autocomplete
+    const players = ["John Doe", "Mike Smith", "Anna Lee", "Chris Brown"];
+    const teams = ["The Hawks", "The Tigers", "The Wolves", "The Eagles"];
+
+    // Sample player data with all the requested categories
+    const allPlayersData = [
+        { name: "John Doe", email: "john@example.com", sport: "Cricket", category: "T20", ageGroup: "18-19", team: "The Tigers" },
+        { name: "Mike Smith", email: "mike@example.com", sport: "Basketball", category: "Below 75", ageGroup: "19-21", team: "The Eagles" },
+        { name: "Anna Lee", email: "anna@example.com", sport: "Cricket", category: "Test", ageGroup: "21-22", team: "The Tigers" },
+        { name: "Chris Brown", email: "chris@example.com", sport: "Volleyball", category: "N/A", ageGroup: "18-19", team: "" },
+        { name: "Sam Williams", email: "sam@example.com", sport: "Football", category: "N/A", ageGroup: "19-21", team: "The Eagles" },
+        { name: "Sarah Connor", email: "sarah@example.com", sport: "Table Tennis", category: "Duo", ageGroup: "18-19", team: "" },
+        { name: "Alex Jones", email: "alex@example.com", sport: "Kabbadi", category: "Below 60", ageGroup: "21-22", team: "The Wolves" },
+        { name: "Emily White", email: "emily@example.com", sport: "Cricket", category: "T10", ageGroup: "19-21", team: "The Hawks" },
+        { name: "Frank Johnson", email: "frank@example.com", sport: "Volleyball", category: "N/A", ageGroup: "18-19", team: "" },
+        { name: "Grace Adams", email: "grace@example.com", sport: "Table Tennis", category: "Duo", ageGroup: "18-19", team: "" }
+    ];
+
+    // Global array to store structured team data
+    const allTeamsData = [
+        { name: "The Tigers", sport: "Cricket", category: "T20", size: 2 },
+        { name: "The Eagles", sport: "Basketball", category: "Below 75", size: 2 },
+        { name: "The Wolves", sport: "Kabbadi", category: "Below 60", size: 1 },
+        { name: "The Hawks", sport: "Cricket", category: "T10", size: 1 }
+    ];
+    let nextTeamId = 5; // To simulate creating new teams
+
+    // Global array to store scheduled matches
+    let scheduledMatches = [
+        { id: 101, date: "2025-08-20", time: "15:00", sport: "Cricket", status: "Scheduled" }
+    ];
+    let nextMatchId = 102;
+    const MAX_TEAM_SIZE = 5; // Define a maximum team size
+
+    function showMessage(text) {
+        const msgBox = document.getElementById('message-box');
+        msgBox.textContent = text;
+        msgBox.classList.add('show');
+        setTimeout(() => {
+            msgBox.classList.remove('show');
+        }, 3000);
+    }
+    
+    function showSection(sectionId, clickedElement) {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        const sectionToShow = document.getElementById(sectionId + '-section');
+        if (sectionToShow) {
+            sectionToShow.style.display = 'block';
+        }
+        
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        if (clickedElement) {
+            clickedElement.classList.add('active');
+        }
+
+        if (sectionId === 'players') {
+            populateTeamFormationFilters();
+            populateTeamFormationTool();
+            populatePlayersList();
+        }
+    }
+
+    // New function to toggle the entire sidebar
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('sidebar-collapsed');
+        toggleBtn.classList.toggle('sidebar-collapsed');
+    }
+
+    // Function to toggle the admin details section within the sidebar
+    function toggleAdminDetails() {
+        const adminDetails = document.getElementById('admin-details');
+        const toggleButton = document.querySelector('.toggle-details-button');
+        adminDetails.classList.toggle('show');
+        toggleButton.classList.toggle('active');
+    }
+
+    function toggleTargetInput() {
+        const targetSelect = document.getElementById('announcementTarget');
+        const targetInputContainer = document.getElementById('target-input-container');
+        if (targetSelect.value === 'players' || targetSelect.value === 'teams') {
+            targetInputContainer.style.display = 'block';
+        } else {
+            targetInputContainer.style.display = 'none';
+        }
+        document.getElementById('autocomplete-list').innerHTML = '';
+    }
+    
+    function setupAutocomplete(event) {
+        const input = event.target;
+        const targetType = document.getElementById('announcementTarget').value;
+        const arr = targetType === 'players' ? players : teams;
+        const a = document.getElementById('autocomplete-list');
+        a.innerHTML = '';
+        const inputValue = input.value.split(',').pop().trim();
+
+        if (!inputValue) { return false; }
+
+        arr.forEach(item => {
+            if (item.toUpperCase().includes(inputValue.toUpperCase())) {
+                const b = document.createElement("div");
+                b.innerHTML = item;
+                b.addEventListener("click", function() {
+                    const currentText = input.value;
+                    const parts = currentText.split(',');
+                    parts.pop();
+                    const newText = parts.join(', ') + (parts.length > 0 ? ', ' : '') + this.textContent + ', ';
+                    input.value = newText;
+                    a.innerHTML = '';
+                    input.focus();
+                });
+                a.appendChild(b);
+            }
+        });
+    }
+
+    function acceptPlayer(button, playerName) {
+        const row = button.closest('tr');
+        row.remove();
+        showMessage(`${playerName} has been accepted!`);
+    }
+
+    function denyPlayer(button, playerName) {
+        const row = button.closest('tr');
+        row.remove();
+        showMessage(`${playerName}'s request has been denied.`);
+    }
+
+    function removePlayer(button, playerName) {
+        const row = button.closest('tr');
+        row.remove();
+        showMessage(`${playerName} has been removed from the system.`);
+    }
+    
+    // Checks for a time conflict before scheduling
+    function checkConflict() {
+        const matchDate = document.getElementById('matchDate').value;
+        const matchTime = document.getElementById('matchTime').value;
+        const conflictMessage = document.getElementById('conflictMessage');
+        const matchSport = document.getElementById('matchSport').value;
+
+        if (matchDate && matchTime && matchSport) {
+            const conflict = scheduledMatches.find(match => match.date === matchDate && match.time === matchTime);
+            if (conflict) {
+                conflictMessage.style.display = 'block';
+                conflictMessage.textContent = `A ${conflict.sport} match is already scheduled at this time.`;
+            } else {
+                conflictMessage.style.display = 'none';
+            }
+        } else {
+            conflictMessage.style.display = 'none';
+        }
+    }
+
+    function scheduleMatch(event) {
+        event.preventDefault();
+
+        const matchSport = document.getElementById('matchSport').value;
+        const matchDate = document.getElementById('matchDate').value;
+        const matchTime = document.getElementById('matchTime').value;
+
+        // Check for conflict before scheduling
+        const conflict = scheduledMatches.find(match => match.date === matchDate && match.time === matchTime);
+        if (conflict) {
+            showMessage("Cannot schedule: A match is already scheduled for this time.");
+            return;
+        }
+
+        const newMatch = {
+            id: nextMatchId++,
+            date: matchDate,
+            time: matchTime,
+            sport: matchSport,
+            status: "Scheduled"
+        };
+
+        scheduledMatches.push(newMatch);
+        populateUpcomingMatches();
+        showMessage(`New match for ${matchSport} scheduled for ${matchDate} at ${matchTime}.`);
+        event.target.reset();
+        document.getElementById('conflictMessage').style.display = 'none';
+    }
+    
+    function makeAnnouncement(event) {
+        event.preventDefault();
+        const target = document.getElementById('announcementTarget').value;
+        const text = document.getElementById('announcementText').value;
+        let message = `New announcement posted for: `;
+
+        if (target === 'all') {
+            message += 'All users';
+        } else {
+            const targetList = document.getElementById('targetList').value;
+            message += `${target}: ${targetList}`;
+        }
+        showMessage(message);
+
+        event.target.reset();
+        document.getElementById('target-input-container').style.display = 'none';
+    }
+
+    function populateDashboard() {
+        const total = allPlayersData.length;
+        const inTeams = allPlayersData.filter(p => p.team !== "").length;
+        const individuals = total - inTeams;
+        const totalTeams = allTeamsData.length;
+
+        document.getElementById('totalPlayersCount').textContent = total;
+        document.getElementById('playersInTeamsCount').textContent = inTeams;
+        document.getElementById('individualPlayersCount').textContent = individuals;
+        document.getElementById('totalTeamsCount').textContent = totalTeams;
+    }
+
+    function populatePlayersList() {
+        const playerListContainer = document.getElementById('allPlayersList');
+        playerListContainer.innerHTML = '';
+
+        const playersBySport = allPlayersData.reduce((acc, player) => {
+            acc[player.sport] = acc[player.sport] || [];
+            acc[player.sport].push(player);
+            return acc;
+        }, {});
+
+        for (const sport in playersBySport) {
+            let sportDetails = document.createElement('details');
+            sportDetails.innerHTML = `<summary>${sport} (${playersBySport[sport].length} players)</summary>`;
+
+            const playersByCategoryAndAge = playersBySport[sport].reduce((acc, player) => {
+                const key = `${player.category} - ${player.ageGroup}`;
+                acc[key] = acc[key] || [];
+                acc[key].push(player);
+                return acc;
+            }, {});
+
+            for (const categoryAge in playersByCategoryAndAge) {
+                let categoryDetails = document.createElement('details');
+                categoryDetails.classList.add('nested-details');
+                categoryDetails.innerHTML = `<summary>${categoryAge} (${playersByCategoryAndAge[categoryAge].length} players)</summary>`;
+
+                let table = document.createElement('table');
+                table.classList.add('player-list-table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Team</th>
+                            <th>Email</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${playersByCategoryAndAge[categoryAge].map(p => `
+                            <tr>
+                                <td>${p.name}</td>
+                                <td>${p.team || "Individual"}</td>
+                                <td>${p.email}</td>
+                                <td><button class="action-button" onclick="showContactInfo('${p.name}', '${p.email}')">Contact</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                categoryDetails.appendChild(table);
+                sportDetails.appendChild(categoryDetails);
+            }
+            playerListContainer.appendChild(sportDetails);
+        }
+    }
+
+    function populateTeamFormationFilters() {
+        const filterSportSelect = document.getElementById('filterSport');
+        const filterCategorySelect = document.getElementById('filterCategory');
+
+        filterSportSelect.innerHTML = '<option value="all">All Sports</option>';
+        filterCategorySelect.innerHTML = '<option value="all">All Categories</option>';
+
+        const sports = [...new Set(allPlayersData.map(p => p.sport))];
+        const categories = [...new Set(allPlayersData.map(p => p.category))];
+
+        sports.forEach(sport => {
+            const option = document.createElement('option');
+            option.value = sport;
+            option.textContent = sport;
+            filterSportSelect.appendChild(option);
+        });
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            filterCategorySelect.appendChild(option);
+        });
+    }
+
+    function populateTeamFormationTool() {
+        const individualPlayersSelect = document.getElementById('individualPlayersSelect');
+        const openTeamsSelect = document.getElementById('openTeamsSelect');
+        const selectedSport = document.getElementById('filterSport').value;
+        const selectedCategory = document.getElementById('filterCategory').value;
+        const formNewTeamBtn = document.getElementById('formNewTeamBtn');
+
+        individualPlayersSelect.innerHTML = '';
+        openTeamsSelect.innerHTML = '';
+        formNewTeamBtn.disabled = true;
+
+        const individualPlayers = allPlayersData.filter(p => {
+            const matchesSport = selectedSport === 'all' || p.sport === selectedSport;
+            const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
+            return p.team === "" && matchesSport && matchesCategory;
+        });
+
+        individualPlayers.forEach(player => {
+            const option = document.createElement('option');
+            option.value = player.name;
+            option.textContent = `${player.name} (${player.sport}, ${player.category})`;
+            individualPlayersSelect.appendChild(option);
+        });
+
+        const teamsWithOpenSlots = allTeamsData.filter(team => {
+            const matchesSport = selectedSport === 'all' || team.sport === selectedSport;
+            const matchesCategory = selectedCategory === 'all' || team.category === selectedCategory;
+            return team.size < MAX_TEAM_SIZE && matchesSport && matchesCategory;
+        });
+
+        teamsWithOpenSlots.forEach(team => {
+            const option = document.createElement('option');
+            option.value = team.name;
+            option.textContent = `${team.name} (${MAX_TEAM_SIZE - team.size} spots left, ${team.sport}, ${team.category})`;
+            openTeamsSelect.appendChild(option);
+        });
+
+        // Enable "Form New Team" button if a player is selected
+        individualPlayersSelect.onchange = function() {
+            formNewTeamBtn.disabled = this.value === "";
+        };
+    }
+
+    function matchPlayerToTeam() {
+        const individualPlayersSelect = document.getElementById('individualPlayersSelect');
+        const openTeamsSelect = document.getElementById('openTeamsSelect');
+
+        const playerName = individualPlayersSelect.value;
+        const teamName = openTeamsSelect.value;
+
+        if (!playerName || !teamName) {
+            showMessage("Please select a player and a team to assign.");
+            return;
+        }
+
+        const playerToAssign = allPlayersData.find(p => p.name === playerName);
+        const teamToJoin = allTeamsData.find(t => t.name === teamName);
+
+        if (playerToAssign.sport !== teamToJoin.sport || playerToAssign.category !== teamToJoin.category) {
+            showMessage("Error: Player's sport/category does not match the team's.");
+            return;
+        }
+        
+        if (teamToJoin.size >= MAX_TEAM_SIZE) {
+            showMessage("Error: The selected team is already full.");
+            return;
+        }
+
+        playerToAssign.team = teamName;
+        teamToJoin.size++;
+        showMessage(`${playerName} has been assigned to ${teamName}.`);
+        refreshUI();
+    }
+    
+    // New function to automatically assign a player
+    function autoAssignPlayer() {
+        const individualPlayersSelect = document.getElementById('individualPlayersSelect');
+        const playerName = individualPlayersSelect.value;
+
+        if (!playerName) {
+            showMessage("Please select a player to auto-assign.");
+            return;
+        }
+
+        const playerToAssign = allPlayersData.find(p => p.name === playerName);
+        const compatibleTeams = allTeamsData.filter(team => 
+            team.size < MAX_TEAM_SIZE &&
+            team.sport === playerToAssign.sport &&
+            team.category === playerToAssign.category
+        );
+
+        if (compatibleTeams.length > 0) {
+            const randomTeam = compatibleTeams[Math.floor(Math.random() * compatibleTeams.length)];
+            playerToAssign.team = randomTeam.name;
+            randomTeam.size++;
+            showMessage(`Auto-assigned ${playerName} to ${randomTeam.name}.`);
+            refreshUI();
+        } else {
+            showMessage("No compatible teams with open spots found for this player.");
+        }
+    }
+
+    // New function to form a new team
+    function formNewTeam() {
+        const individualPlayersSelect = document.getElementById('individualPlayersSelect');
+        const playerName = individualPlayersSelect.value;
+        
+        if (!playerName) {
+            showMessage("Please select a player to form a new team.");
+            return;
+        }
+
+        const playerToAssign = allPlayersData.find(p => p.name === playerName);
+        let teamName = prompt("Enter a new team name:");
+
+        if (teamName) {
+            teamName = teamName.trim();
+            if (teamName === "") {
+                showMessage("Team name cannot be empty.");
+                return;
+            }
+            if (allTeamsData.find(t => t.name === teamName)) {
+                showMessage("A team with this name already exists.");
+                return;
+            }
+
+            const newTeam = {
+                id: `T${nextTeamId++}`,
+                name: teamName,
+                sport: playerToAssign.sport,
+                category: playerToAssign.category,
+                size: 1
+            };
+            allTeamsData.push(newTeam);
+            playerToAssign.team = teamName;
+            showMessage(`New team "${teamName}" created and ${playerName} has been assigned.`);
+            refreshUI();
+        }
+    }
+
+    // New function to show player contact info in a modal
+    function showContactInfo(name, email) {
+        const contactModal = document.getElementById('contact-modal');
+        document.getElementById('contact-name').textContent = name;
+        document.getElementById('contact-email').textContent = email;
+        contactModal.classList.add('show');
+    }
+
+    // New function to close the contact modal
+    function closeContactModal() {
+        document.getElementById('contact-modal').classList.remove('show');
+    }
+
+    function populateSportsDropdown() {
+        const sportsDropdown = document.getElementById('matchSport');
+        const sports = [...new Set(allPlayersData.map(p => p.sport))];
+        sports.forEach(sport => {
+            const option = document.createElement('option');
+            option.value = sport;
+            option.textContent = sport;
+            sportsDropdown.appendChild(option);
+        });
+    }
+
+    function populateUpcomingMatches() {
+        const tableBody = document.getElementById('upcomingMatchesTable');
+        tableBody.innerHTML = '';
+
+        if (scheduledMatches.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5">No upcoming matches scheduled.</td></tr>';
+            return;
+        }
+
+        scheduledMatches.forEach(match => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${match.id}</td>
+                <td>${match.date}</td>
+                <td>${match.time}</td>
+                <td>${match.sport}</td>
+                <td>${match.status}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // New helper function to refresh all UI elements after a change
+    function refreshUI() {
+        populateDashboard();
+        populatePlayersList();
+        populateTeamFormationFilters();
+        populateTeamFormationTool();
+    }
+
+    // Initialize with dashboard section visible and add event listener for autocomplete
+    window.onload = function() {
+        showSection('dashboard', document.querySelector('.sidebar-menu a'));
+        const targetListInput = document.getElementById('targetList');
+        if (targetListInput) {
+            targetListInput.addEventListener('input', setupAutocomplete);
+        }
+        populateDashboard();
+        populatePlayersList();
+        populateSportsDropdown();
+        populateUpcomingMatches();
+        populateTeamFormationFilters();
+        populateTeamFormationTool();
+    };
+</script>
+
+</body>
+</html>

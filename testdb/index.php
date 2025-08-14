@@ -14,6 +14,18 @@
 <body>
     <video class="back-vid" autoplay loop muted plays-inline src="videos/galaxy.mp4"></video>
     <!-- Toast Container -->
+     <header style="background-color: #42ade6ff; color: white; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center;">
+        <img src="assets/tt.jpg" alt="Logo" style="height: 40px; margin-right: 10px;">
+        <h1 style="margin: 0; font-size: 1.5rem;">Sports Club</h1>
+    </div>
+    <nav>
+        <a href="index.html" style="color: white; margin: 0 10px; text-decoration: none;">Home</a>
+        <a href="about.html" style="color: white; margin: 0 10px; text-decoration: none;">About</a>
+        <a href="contact.html" style="color: white; margin: 0 10px; text-decoration: none;">Contact</a>
+        <a href="loginpage.html" style="color: white; margin: 0 10px; text-decoration: none;">Login</a>
+    </nav>
+</header>
     <div id="toast-container" class="toast-container"></div>
 
     <div class="min-h-screen relative overflow-hidden">
